@@ -1,11 +1,22 @@
 import { Request, Response } from 'express'; // Necessário 
-import { getRepository } from "typeorm";
+import { getRepository, Like } from "typeorm";
 import Users from '../models/Users';
 
 export default {
   async index(req: Request, res: Response) {
+
+    const { name } = req.query;
     const usersRepository = getRepository(Users);
-    const users = await usersRepository.find();
+
+    var users = [];
+
+    if (!name) {
+      users = await usersRepository.find();
+    } else {
+      users = await usersRepository.find({
+        name: Like(`%${name}%`)
+      });
+    }
 
     return res.json(users);
   },
